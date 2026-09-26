@@ -30,8 +30,8 @@ function completeTask(id) {
 }
 
 function listTasks({ includeDone = true, priority } = {}) {
-  var result = includeDone ? tasks : tasks.filter((t) => !t.done);
-  if (priority) {
+  let result = includeDone ? tasks : tasks.filter((t) => !t.done);
+  if (priority !== undefined) {
     result = result.filter((t) => t.priority === priority);
   }
   return result;
