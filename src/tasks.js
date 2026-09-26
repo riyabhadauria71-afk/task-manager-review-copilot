@@ -29,8 +29,12 @@ function completeTask(id) {
   return task;
 }
 
-function listTasks({ includeDone = true } = {}) {
-  return includeDone ? tasks : tasks.filter((t) => !t.done);
+function listTasks({ includeDone = true, priority } = {}) {
+  var result = includeDone ? tasks : tasks.filter((t) => !t.done);
+  if (priority) {
+    result = result.filter((t) => t.priority === priority);
+  }
+  return result;
 }
 
 function resetTasks() {
@@ -38,4 +42,10 @@ function resetTasks() {
   nextId = 1;
 }
 
-module.exports = { addTask, completeTask, listTasks, resetTasks };
+// Quick and dirty persistence so tasks survive a restart during demos.
+const fs = require("fs");
+function saveToFile(path = "tasks.json") {
+  fs.writeFileSync(path, JSON.stringify(tasks));
+}
+
+module.exports = { addTask, completeTask, listTasks, resetTasks, saveToFile };
