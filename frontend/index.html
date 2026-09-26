@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Review Copilot — Task Manager Demo</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-title">
+      <span class="dot"></span>
+      <span>task-manager</span>
+      <span class="branch">feature/task-priority-filter</span>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button class="tab is-active" data-tab="tasks" role="tab" aria-selected="true">Tasks</button>
+      <button class="tab" data-tab="review" role="tab" aria-selected="false">Review findings</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="panel-tasks" class="panel is-active">
+      <form id="task-form" class="task-form">
+        <input id="task-title" type="text" placeholder="Add a task…" autocomplete="off" required />
+        <select id="task-priority">
+          <option value="low">low</option>
+          <option value="normal" selected>normal</option>
+          <option value="high">high</option>
+        </select>
+        <button type="submit">Add</button>
+      </form>
+
+      <div class="task-filter">
+        <label for="priority-filter">Filter by priority</label>
+        <select id="priority-filter">
+          <option value="">all</option>
+          <option value="low">low</option>
+          <option value="normal">normal</option>
+          <option value="high">high</option>
+        </select>
+      </div>
+
+      <ul id="task-list" class="task-list"></ul>
+      <p id="task-empty" class="empty-state" hidden>No tasks yet. Add one above.</p>
+    </section>
+
+    <section id="panel-review" class="panel">
+      <div id="review-meta" class="review-meta"></div>
+      <div id="review-summary" class="review-summary"></div>
+
+      <h2 class="section-label">Blockers</h2>
+      <ol id="review-blockers" class="finding-list"></ol>
+
+      <h2 class="section-label">Notes</h2>
+      <ol id="review-notes" class="finding-list"></ol>
+
+      <h2 class="section-label">Auto-fixable</h2>
+      <ul id="review-autofix" class="autofix-list"></ul>
+
+      <p id="review-resolution" class="resolution"></p>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
