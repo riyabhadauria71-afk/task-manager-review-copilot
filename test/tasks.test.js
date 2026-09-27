@@ -47,3 +47,28 @@ test("listTasks can exclude completed tasks", () => {
   assert.strictEqual(open.length, 1);
   assert.strictEqual(open[0].title, "B");
 });
+
+test("listTasks filters by priority", () => {
+  addTask("Low priority task", "low");
+  addTask("High priority task", "high");
+  addTask("Another high task", "high");
+  const result = listTasks({ priority: "high" });
+  assert.strictEqual(result.length, 2);
+  assert.ok(result.every((t) => t.priority === "high"));
+});
+
+test("listTasks returns empty array when no tasks match priority", () => {
+  addTask("Normal task", "normal");
+  const result = listTasks({ priority: "urgent" });
+  assert.strictEqual(result.length, 0);
+});
+
+test("listTasks filters by priority and excludes completed tasks", () => {
+  const a = addTask("Done high", "high");
+  addTask("Open high", "high");
+  addTask("Open normal", "normal");
+  completeTask(a.id);
+  const result = listTasks({ includeDone: false, priority: "high" });
+  assert.strictEqual(result.length, 1);
+  assert.strictEqual(result[0].title, "Open high");
+});

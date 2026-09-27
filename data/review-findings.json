@@ -1,0 +1,65 @@
+{
+  "branch": "feature/task-priority-filter",
+  "base": "main",
+  "generatedBy": "IBM Bob 2.0 — Review Copilot (spec-compliance, convention, test-coverage, security, architecture-fit personas)",
+  "timeToReview": "under 2 minutes",
+  "blockers": [
+    {
+      "id": 1,
+      "tags": ["SPEC", "TEST"],
+      "title": "No tests added for the new priority filter (AC 3: NOT MET)",
+      "detail": "The test file is unchanged. None of the new paths in listTasks — priority match, no match, combined with includeDone: false — are exercised."
+    },
+    {
+      "id": 2,
+      "tags": ["SPEC"],
+      "title": "saveToFile is out-of-scope scope drift",
+      "detail": "TICKET-42 explicitly states persistence/storage changes are not part of this ticket. saveToFile, require(\"fs\"), and its export all contradict the ticket boundary."
+    },
+    {
+      "id": 3,
+      "tags": ["CONVENTION", "SPEC"],
+      "title": "var instead of let",
+      "detail": "listTasks uses var result. CONTRIBUTING.md and the rest of the file both require const/let."
+    },
+    {
+      "id": 4,
+      "tags": ["SPEC"],
+      "title": "Falsy guard on priority blocks valid values",
+      "detail": "if (priority) silently skips the filter for any falsy-but-valid priority (e.g. priority: 0). Correct guard is if (priority !== undefined)."
+    },
+    {
+      "id": 5,
+      "tags": ["SECURITY", "CONVENTION"],
+      "title": "saveToFile has no input validation and allows path traversal",
+      "detail": "path is passed straight to fs.writeFileSync with no validation, allowing writes to arbitrary filesystem locations."
+    }
+  ],
+  "notes": [
+    {
+      "id": 6,
+      "tags": ["SECURITY"],
+      "title": "require(\"fs\") placed mid-file",
+      "detail": "Inconsistent with module-level import grouping elsewhere in the file."
+    },
+    {
+      "id": 7,
+      "tags": ["SECURITY"],
+      "title": "priority accepted without an allowlist",
+      "detail": "No injection risk today, but no allowlist against valid priority values if this is ever wired to an HTTP route."
+    },
+    {
+      "id": 8,
+      "tags": ["CONVENTION"],
+      "title": "Missing ticket link in PR description",
+      "detail": "CONTRIBUTING.md requires every PR to link a ticket (e.g. Fixes TICKET-42)."
+    }
+  ],
+  "autoFixable": [
+    { "id": "A", "title": "var → let", "applied": true },
+    { "id": "B", "title": "Falsy guard → undefined check", "applied": true },
+    { "id": "C", "title": "Add missing priority-filter test stubs", "applied": true }
+  ],
+  "stillOpen": [2, 5],
+  "resolution": "Pull saveToFile into its own PR (and update ADR 0001 first). Fixes A, B, and C were approved and applied. Blockers #2 and #5 remain open pending a scoping decision, not a mechanical fix."
+}
