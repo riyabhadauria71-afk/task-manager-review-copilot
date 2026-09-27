@@ -237,12 +237,52 @@ select, .task-form button {
   border-radius: 3px;
   color: var(--bg);
   background: var(--text-dim);
+  cursor: pointer;
+  border: 1px solid transparent;
+  user-select: none;
+}
+
+.tag:hover {
+  filter: brightness(1.15);
+}
+
+.tag.is-active {
+  border-color: var(--text);
+  box-shadow: 0 0 0 1px var(--text);
 }
 
 .tag[data-tag="SECURITY"] { background: var(--accent-blocker); }
 .tag[data-tag="SPEC"] { background: var(--accent-warn); }
 .tag[data-tag="TEST"] { background: var(--accent-ok); }
 .tag[data-tag="CONVENTION"] { background: var(--text-dim); }
+
+.review-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.clear-filter-btn {
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.clear-filter-btn:hover {
+  border-color: var(--text-dim);
+}
+
+.finding-empty {
+  padding: 14px 0;
+  color: var(--text-dim);
+  font-size: 13px;
+  font-style: italic;
+}
 
 .finding-title {
   font-weight: 600;

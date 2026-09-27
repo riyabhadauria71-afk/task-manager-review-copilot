@@ -90,26 +90,22 @@ priorityFilter.addEventListener("change", loadTasks);
 // --- review findings ---
 
 let reviewLoaded = false;
+let reviewData = null;
+let activeTag = null;
 
 async function loadReview() {
   if (reviewLoaded) return;
   reviewLoaded = true;
 
   const res = await fetch("/api/review");
-  const data = await res.json();
+  reviewData = await res.json();
 
   document.getElementById("review-meta").textContent =
-    `${data.branch} → ${data.base}  ·  reviewed by ${data.generatedBy}  ·  ${data.timeToReview}`;
-
-  document.getElementById("review-summary").textContent =
-    `${data.blockers.length} blockers, ${data.notes.length} notes. ${data.autoFixable.filter((f) => f.applied).length} of ${data.autoFixable.length} mechanical fixes applied.`;
-
-  renderFindingList("review-blockers", data.blockers);
-  renderFindingList("review-notes", data.notes);
+    `${reviewData.branch} → ${reviewData.base}  ·  reviewed by ${reviewData.generatedBy}  ·  ${reviewData.timeToReview}`;
 
   const autofixList = document.getElementById("review-autofix");
   autofixList.innerHTML = "";
-  for (const fix of data.autoFixable) {
+  for (const fix of reviewData.autoFixable) {
     const li = document.createElement("li");
     const label = document.createElement("span");
     label.textContent = `${fix.id} — ${fix.title}`;
@@ -121,7 +117,44 @@ async function loadReview() {
     autofixList.appendChild(li);
   }
 
-  document.getElementById("review-resolution").textContent = data.resolution;
+  document.getElementById("review-resolution").textContent = reviewData.resolution;
+
+  renderReview();
+}
+
+function setActiveTag(tag) {
+  activeTag = activeTag === tag ? null : tag;
+  renderReview();
+}
+
+function renderReview() {
+  if (!reviewData) return;
+
+  const filteredBlockers = activeTag
+    ? reviewData.blockers.filter((f) => f.tags.includes(activeTag))
+    : reviewData.blockers;
+  const filteredNotes = activeTag
+    ? reviewData.notes.filter((f) => f.tags.includes(activeTag))
+    : reviewData.notes;
+
+  const summaryEl = document.getElementById("review-summary");
+  summaryEl.innerHTML = "";
+  const summaryText = document.createElement("span");
+  summaryText.textContent = activeTag
+    ? `Filtered to ${activeTag}: ${filteredBlockers.length} blockers, ${filteredNotes.length} notes.`
+    : `${reviewData.blockers.length} blockers, ${reviewData.notes.length} notes. ${reviewData.autoFixable.filter((f) => f.applied).length} of ${reviewData.autoFixable.length} mechanical fixes applied.`;
+  summaryEl.appendChild(summaryText);
+
+  if (activeTag) {
+    const clearBtn = document.createElement("button");
+    clearBtn.className = "clear-filter-btn";
+    clearBtn.textContent = "Clear filter ×";
+    clearBtn.addEventListener("click", () => setActiveTag(activeTag));
+    summaryEl.appendChild(clearBtn);
+  }
+
+  renderFindingList("review-blockers", filteredBlockers);
+  renderFindingList("review-notes", filteredNotes);
 }
 
 function renderFindingList(elementId, findings) {
@@ -137,6 +170,9 @@ function renderFindingList(elementId, findings) {
       tag.className = "tag";
       tag.dataset.tag = t;
       tag.textContent = t;
+      if (t === activeTag) tag.classList.add("is-active");
+      tag.title = `Filter by ${t}`;
+      tag.addEventListener("click", () => setActiveTag(t));
       tags.appendChild(tag);
     }
 
@@ -152,6 +188,13 @@ function renderFindingList(elementId, findings) {
     li.appendChild(title);
     li.appendChild(detail);
     el.appendChild(li);
+  }
+
+  if (findings.length === 0) {
+    const empty = document.createElement("li");
+    empty.className = "finding-empty";
+    empty.textContent = "No findings with this tag.";
+    el.appendChild(empty);
   }
 }
 
